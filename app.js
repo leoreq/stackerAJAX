@@ -11,7 +11,7 @@ $(document).ready( function() {
 		// zero out results if previous search has run
 		$('.results').html('');
 		// get the value of the tags the user submitted
-		var tags = $(this).find("input[name='tags']").val();
+		var tags = $(this).find("input[name='answerers']").val();
 		getInspiration(tags);
 	});
 });
@@ -91,12 +91,12 @@ var showError = function(error){
 // takes a string of semi-colon separated tags to be searched
 // for on StackOverflow
 var getUnanswered = function(tags) {
-	
 	// the parameters we need to pass in our request to StackOverflow's API
 	var request = {tagged: tags,
 								site: 'stackoverflow',
 								order: 'desc',
 								sort: 'creation'};
+	console.log(request.tagged);
 	
 	var result = $.ajax({
 		url: "http://api.stackexchange.com/2.2/questions/unanswered",
@@ -105,6 +105,7 @@ var getUnanswered = function(tags) {
 		type: "GET",
 		})
 	.done(function(result){
+			console.log(request.tagged);
 		var searchResults = showSearchResults(request.tagged, result.items.length);
 
 		$('.search-results').html(searchResults);
@@ -123,12 +124,11 @@ var getUnanswered = function(tags) {
 
 // takes a string of semi-colon separated tags to be searched
 // for on StackOverflow
-var getInspiration = function(tags) 
-
+var getInspiration = function(tags) {
 	
 	// the parameters we need to pass in our request to StackOverflow's API
 	var request = {tagged: tags,
-								site: 'stackoverflow'};
+				site: 'stackoverflow'};
 	
 	var result = $.ajax({
 		url: "http://api.stackexchange.com/2.2/tags/html/top-answerers/all_time",
@@ -138,6 +138,7 @@ var getInspiration = function(tags)
 		})
 	//PENDING SECTION
 	.done(function(result){
+		console.log(request.tagged);
 		var searchResults = showSearchResults(request.tagged, result.items.length);
 
 		$('.search-results').html(searchResults);
