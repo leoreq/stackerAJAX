@@ -123,7 +123,8 @@ var getUnanswered = function(tags) {
 
 // takes a string of semi-colon separated tags to be searched
 // for on StackOverflow
-var getInspiration = function(tags) {
+var getInspiration = function(tags) 
+
 	
 	// the parameters we need to pass in our request to StackOverflow's API
 	var request = {tagged: tags,
