@@ -6,6 +6,14 @@ $(document).ready( function() {
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
 	});
+	//Adding Inspiration Listener
+	$('.inspiration-getter').submit( function(event){
+		// zero out results if previous search has run
+		$('.results').html('');
+		// get the value of the tags the user submitted
+		var tags = $(this).find("input[name='tags']").val();
+		getInspiration(tags);
+	});
 });
 
 // this function takes the question object returned by StackOverflow 
@@ -19,6 +27,7 @@ var showQuestion = function(question) {
 	var questionElem = result.find('.question-text a');
 	questionElem.attr('href', question.link);
 	questionElem.text(question.title);
+
 
 	// set the date asked property in result
 	var asked = result.find('.asked-date');
@@ -41,6 +50,29 @@ var showQuestion = function(question) {
 	return result;
 };
 
+// this function takes the ANSWERED QUESTION object returned by StackOverflow 
+// and creates new result to be appended to DOM
+var showAnswerer = function(answerer) {
+	
+	// clone our result template code
+	var result = $('.templates .answerers').clone();
+
+	// set the score of the profile
+	var scored = result.find('.answer-score');
+	scored.text(answerer.score);
+
+	// set the count of posts repplied so far
+	var postCounter = result.find('.post-count');
+	postCounter.text(answerer.post_count);
+
+	// set some properties related to the guru
+	var guru = result.find('.guru');
+	guru.html('<p>Name: <a target="_blank" href=' + answerer.user.link + ' >' +answerer.user.display_name +'</a>'+'</p>' +
+ 							'<p>Reputation: ' + answerer.user.reputation + '</p>'
+	);
+
+	return result;
+};
 
 // this function takes the results object from StackOverflow
 // and creates info about search results to be appended to DOM
@@ -79,6 +111,7 @@ var getUnanswered = function(tags) {
 
 		$.each(result.items, function(i, item) {
 			var question = showQuestion(item);
+			//console.log(item);
 			$('.results').append(question);
 		});
 	})
@@ -87,6 +120,43 @@ var getUnanswered = function(tags) {
 		$('.search-results').append(errorElem);
 	});
 };
+
+// takes a string of semi-colon separated tags to be searched
+// for on StackOverflow
+var getInspiration = function(tags) {
+	
+	// the parameters we need to pass in our request to StackOverflow's API
+	var request = {tagged: tags,
+								site: 'stackoverflow'};
+	
+	var result = $.ajax({
+		url: "http://api.stackexchange.com/2.2/tags/html/top-answerers/all_time",
+		data: request,
+		dataType: "jsonp",
+		type: "GET",
+		})
+	//PENDING SECTION
+	.done(function(result){
+		var searchResults = showSearchResults(request.tagged, result.items.length);
+
+		$('.search-results').html(searchResults);
+
+		$.each(result.items, function(i, item) {
+			var answerer = showAnswerer(item);
+			//console.log(item);
+			$('.results').append(answerer);
+		});
+
+	})
+	.fail(function(jqXHR, error, errorThrown){
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
+};
+
+
+
+
 
 
 
